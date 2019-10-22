@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Swarmy Swarmers - How it was Built</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Theme CSS -->
+    <link href="css/clean-blog.min.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    Menu <i class="fa fa-bars"></i>
+                </button>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="index.html">Home</a>
+                    </li>
+                    <li>
+                        <a href="aboutSwarmySwarmers.html">About</a>
+                    </li>
+                    <li>
+                        <a href="timeline.html">Timeline</a>
+                    </li>
+                    <li>
+                        <a href="howitwasbuilt.html">How it was Built</a>
+                    </li>
+                    <li>
+                        <a href="aboutus.html">Meet the Developers</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <!-- Page Header -->
+    <!-- Set your background image for this header on the line below. -->
+    <header class="intro-header" style="background-color:mediumseagreen;">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <div class="post-heading">
+                        <h1>How We Made Swarmy Swarmers</h1>
+                        <h2 class="subheading">We'll split this into two sections, Hardware and Software. </h2>                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Post Content -->
+    <article>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <h2 class="section-heading"> Hardware </h2>
+                    <p> We decided to use the Chassis Kit instead of reverse engineering a commercially made RC car. Reverse engineering and soldering onto an ADC was too difficult and the connections were unreliable.</p>
+
+                    <table style="width:100%" border="1" >
+                      <tr>
+                        <th>Item</th>
+                        <th>Price</th>
+                      </tr>
+                      <tr>
+                        <td> <a href="https://www.adafruit.com/product/3216"> <font color="blue"> Chassis Kit</td>
+                        <td>$19.95</td>
+                      </tr>
+                      <tr>
+                        <td> <a href="https://www.adafruit.com/product/4295"> <font color="blue"> Raspberry Pi 4 Model B</td>
+                        <td>$35.00</td>
+                      </tr>
+                      <tr>
+                        <td> <a href="https://amazon.com/"> <font color="blue"> Camera Module</td>
+                        <td>$12.99</td>
+                      </tr>                      
+                      <tr>
+                        <td> <a href="https://www.adafruit.com/product/1565"> <font color="blue"> Battery Pack </td>
+                        <td>$24.95</td>
+                      </tr>                                            
+                    </table>
+
+                    <h2 class="section-heading"> Software </h2>
+                    <span class="subheading"> <a href="https://github.com/ankitasharma1/swarmbots"> (github) </a> </span>                    
+
+                    <p> This section will be split into two subsections, State Operations and Anti-Collision.</p>
+
+                    <h3>State Operations</h3>
+
+                    <p> Going with the camera option means that the car will run OpenCV for positioning and anti-collision. As a result the camera will be mounted near the back of the chassis along with a colored block of cardboard. OpenCV will be configured to look for blocks of color to identify other cars including the leader. As for the different operating states, we will list and describe them now:</p>
+
+                    <b> Following </b>
+                    <p> All cars will start in the following state. If no leader is issuing commands to the car, it will timeout and switch to the electing state. When in the following state, the car is sitting still or following commands sent by the leader car, all while running anti- collision. </p>
+
+                    <b> Electing </b>
+                    <p> Once in the electing state cars will slowly spin 360 degrees in order to find other cars in its environment while asking for votes. If a car gets votes from at least N/2 other cars to become leader then it will switch to the leader state, else it will go back to the follower state and wait for commands from a leader or timeout to start another election. </p>
+
+                    <b> Leading </b>
+                    <p> After a car has successfully been elected it will become a leader. When becoming a leader, the car will use bluetooth to connect to the controller (this may be a physical RaspberryPi controller or a keyboard/computer). While waiting for connection to the bluetooth controller the leader will broadcast wait commands to all its followers. </p>                    
+
+                    <h3>Anti-Collision</h3>
+                    <p> Every car (except those in the leader state) will constantly run an anti-collision process using OpenCV (and possible short-range ultra-sonic sensors). This process will have the ability to override commands from the leader to either soften them (e.g. go left for 2 seconds instead of 10 seconds) or ignore them completely. The anti-collison software will also have a grouping protocol in which commands will be injected into the buffer to close the distance of the bluetooth connection with the leader. This grouping protocol will also be subject to overrides from the core anti-collison process. </p>
+
+                    <h3>References</h3>
+                    <p> <a href="https://raft.github.io/raft.pdf"> <font color="blue"> In Search of an Understandable Consensus Algorithm [RAFT] </p>
+                </div>
+            </div>
+        </div>
+    </article>
+
+    <hr>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <p class="copyright text-muted">Copyright &copy; Swarmy Swarmers 2019</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- jQuery -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+
+    <!-- Contact Form JavaScript -->
+    <script src="js/jqBootstrapValidation.js"></script>
+    <script src="js/contact_me.js"></script>
+
+    <!-- Theme JavaScript -->
+    <script src="js/clean-blog.min.js"></script>
+
+</body>
+
+</html>
